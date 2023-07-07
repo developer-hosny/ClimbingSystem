@@ -60,6 +60,8 @@ private:
 	void PhysicsClimb(float deltaTime, int32 Iterations);
 
 	void ProcessorClimbaleSurfaceInfo();
+	
+	bool CheckShouldStopClimbing();
 
 	FQuat GetClimbRotation(float deltaTime);
 

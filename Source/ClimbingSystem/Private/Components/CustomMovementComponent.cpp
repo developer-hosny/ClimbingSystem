@@ -80,6 +80,10 @@ void UCustomMovementComponent::PhysicsClimb(float deltaTime, int32 Iterations)
 	ProcessorClimbaleSurfaceInfo();
 
 	/*Check if we should stop climbing*/
+	if (CheckShouldStopClimbing()) {
+		StopClimbing();
+	}
+
 	RestorePreAdditiveRootMotionVelocity();
 
 	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
@@ -136,6 +140,19 @@ void UCustomMovementComponent::ProcessorClimbaleSurfaceInfo()
 	//Debug::Print(TEXT("ClimbableSurfaceNormal : " + CurrentClimbableSurfaceNormal.ToCompactString()), FColor::Red, 2);
 }
  
+bool UCustomMovementComponent::CheckShouldStopClimbing()
+{
+	if (ClimbableSurfacesTracedResults.IsEmpty())return true;
+	const float DotResult = FVector::DotProduct(CurrentClimbableSurfaceNormal, FVector::UpVector);
+	const float DgreeDiff = FMath::RadiansToDegrees(FMath::Acos(DotResult));
+	
+	Debug::Print(TEXT("Degree Diff: ") + FString::SanitizeFloat(DgreeDiff), FColor::Cyan, 1);
+	if (DgreeDiff <= 60.f) {
+		return true;
+	}
+	return false;
+}
+
 FQuat UCustomMovementComponent::GetClimbRotation(float deltaTime)
 {
 	const FQuat CurrentQuat = UpdatedComponent->GetComponentQuat();
@@ -232,7 +249,7 @@ bool UCustomMovementComponent::TraceClimbSurfaces()
 	FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
 	FVector End = Start + UpdatedComponent->GetForwardVector();
 
-	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true);
+	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End);
 
 	return !ClimbableSurfacesTracedResults.IsEmpty();
 }
@@ -251,10 +268,6 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 			// ToDo: Enable climb state
 			Debug::Print(TEXT("Can start climbing"));
 			StartClimbing();
-		}
-		else
-		{
-			Debug::Print(TEXT("Can not start climbing"));
 		}
 	}
 	else
