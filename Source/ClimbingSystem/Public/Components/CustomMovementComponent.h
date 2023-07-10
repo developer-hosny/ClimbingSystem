@@ -4,7 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include <Kismet/KismetMathLibrary.h>
+#include "ClimbingSystem/ClimbingSystemCharacter.h"
+#include "ClimbingSystem/DebugHelper.h"
+#include "Components/CapsuleComponent.h"
 #include "CustomMovementComponent.generated.h"
+
+class UAnimMontage;
+class UAnimInstance;
 
 UENUM(BlueprintType)
 namespace ECustomMovementMode
@@ -24,6 +32,8 @@ class CLIMBINGSYSTEM_API UCustomMovementComponent : public UCharacterMovementCom
 
 protected:
 #pragma region OverridenFunctions
+
+	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -67,6 +77,10 @@ private:
 
 	void SnapMovementToClimbleSurfaces(float deltaTime);
 
+	void PlayeClimbMontage(UAnimMontage* MontageToPlay);
+
+	UFUNCTION()
+	void OnClimbMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 #pragma endregion
 
 #pragma region ClimbCoreVariables
@@ -76,6 +90,9 @@ private:
 	FVector CurrentClimbableSurfaceLocation;
 
 	FVector CurrentClimbableSurfaceNormal;
+
+	UPROPERTY()
+	UAnimInstance* OwingPlayerAnimInstance;
 
 #pragma endregion
 
@@ -100,10 +117,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 		float MaxClimbAceleration = 100.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* IdleToClimbAnimMontage;
+
 #pragma endregion
 
 public:
 	void ToggleClimbing(bool bEnableClimb = false);
 	bool IsClimbing() const;
 	FORCEINLINE FVector GetClimableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
+	FVector GetUnrotatedClimbVelocity()	const;
 };

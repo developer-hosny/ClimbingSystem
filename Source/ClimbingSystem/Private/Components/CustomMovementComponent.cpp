@@ -1,10 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Components/CustomMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "ClimbingSystem/ClimbingSystemCharacter.h"
-#include "ClimbingSystem/DebugHelper.h"
-#include "Components/CapsuleComponent.h"
+
+void UCustomMovementComponent::BeginPlay()
+{
+	OwingPlayerAnimInstance = CharacterOwner->GetMesh()->GetAnimInstance();
+
+	if (OwingPlayerAnimInstance) {
+		OwingPlayerAnimInstance->OnMontageEnded.AddDynamic(this, &UCustomMovementComponent::OnClimbMontageEnded);
+
+		OwingPlayerAnimInstance->OnMontageBlendingOut.AddDynamic(this, &UCustomMovementComponent::OnClimbMontageEnded);
+	}
+}
+
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -175,6 +183,27 @@ void UCustomMovementComponent::SnapMovementToClimbleSurfaces(float deltaTime)
 
 }
 
+void UCustomMovementComponent::PlayeClimbMontage(UAnimMontage* MontageToPlay)
+{
+	if (!MontageToPlay) return;
+	if (!OwingPlayerAnimInstance) return;
+	if (OwingPlayerAnimInstance->IsAnyMontagePlaying()) return;
+
+	OwingPlayerAnimInstance->Montage_Play(MontageToPlay);
+}
+
+void UCustomMovementComponent::OnClimbMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage == IdleToClimbAnimMontage) {
+		StartClimbing();
+	}
+}
+
+FVector UCustomMovementComponent::GetUnrotatedClimbVelocity() const
+{
+	return UKismetMathLibrary::Quat_UnrotateVector(UpdatedComponent->GetComponentQuat(), Velocity);
+}
+
 #pragma region ClimbTraces
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape, bool bDrawPersistantShapes)
 {
@@ -265,9 +294,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 	{
 		if (CanStartClimbing())
 		{
-			// ToDo: Enable climb state
-			Debug::Print(TEXT("Can start climbing"));
-			StartClimbing();
+			PlayeClimbMontage(IdleToClimbAnimMontage);
 		}
 	}
 	else

@@ -21,6 +21,13 @@ void UCharachterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	if (!ClimbingSystemCharacter || !CustomMovementComponent)return;
+
+	GetGroundSpeed();
+	GetShouldMove();
+	GetAirSpeed();
+	GetIsFalling();
+	GetIsClimbing();
+	GetClimbVelocity();
 }
 
 void UCharachterAnimInstance::GetGroundSpeed()
@@ -46,4 +53,15 @@ void UCharachterAnimInstance::GetShouldMove()
 void UCharachterAnimInstance::GetIsFalling()
 {
 	bIsFalling = CustomMovementComponent->IsFalling();
+}
+
+void UCharachterAnimInstance::GetIsClimbing()
+{
+	bIsClimbing = CustomMovementComponent->IsClimbing();
+}
+
+
+void UCharachterAnimInstance::GetClimbVelocity()
+{
+	ClimbVelocity = CustomMovementComponent->GetUnrotatedClimbVelocity();
 }

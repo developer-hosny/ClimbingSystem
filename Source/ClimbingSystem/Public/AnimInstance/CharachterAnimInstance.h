@@ -47,4 +47,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Refrence, meta = (AllowPrivateAccess = "true"))
 	bool bIsFalling;
 	void GetIsFalling();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Refrence, meta = (AllowPrivateAccess = "true"))
+	bool bIsClimbing;
+	void GetIsClimbing();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Refrence, meta = (AllowPrivateAccess = "true"))
+	FVector ClimbVelocity;
+	void GetClimbVelocity();
 };
