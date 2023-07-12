@@ -45,6 +45,7 @@ protected:
 
 	virtual float GetMaxAcceleration() const override;
 
+	virtual  FVector ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity, const FVector& CurrentVelocity) const override;
 #pragma endregion
 
 private:
@@ -122,10 +123,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* IdleToClimbAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ClimbToTopAnimMontage;
+
 #pragma endregion
 
 public:
 	void ToggleClimbing(bool bEnableClimb = false);
+	bool CheckHasReachedLedge();
 	bool IsClimbing() const;
 	FORCEINLINE FVector GetClimableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
 	FVector GetUnrotatedClimbVelocity()	const;
