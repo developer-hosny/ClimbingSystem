@@ -64,6 +64,8 @@ private:
 
 	bool CanStartClimbing();
 
+	bool CanClimbDownLeadg();
+
 	void StartClimbing();
 
 	void StopClimbing();
@@ -119,12 +121,21 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 		float MaxClimbAceleration = 100.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+		float ClimbDownWalkableSurfaceTraceOffset = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+		float ClimbDownLedgeTraceOffset = 50.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* IdleToClimbAnimMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ClimbToTopAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ClimbDownLedgeMontage;
 
 #pragma endregion
 

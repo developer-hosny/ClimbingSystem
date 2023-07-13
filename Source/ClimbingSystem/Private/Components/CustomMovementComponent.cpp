@@ -15,12 +15,15 @@ void UCustomMovementComponent::BeginPlay()
 
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	CanClimbDownLeadg();
 
 	 //TraceClimbSurfaces();
 	 //TraceFromEyeHight(100.f);
-}
 
+}
 
 void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
 {
@@ -243,11 +246,12 @@ void UCustomMovementComponent::PlayeClimbMontage(UAnimMontage* MontageToPlay)
 
 void UCustomMovementComponent::OnClimbMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage == IdleToClimbAnimMontage) {
+	if (Montage == IdleToClimbAnimMontage || Montage == ClimbDownLedgeMontage) {
 		StartClimbing();
+		StopMovementImmediately();
 	}
-	else
-	{
+
+	if(Montage == ClimbToTopAnimMontage){
 		SetMovementMode(MOVE_Walking);
 	}
 }
@@ -346,7 +350,7 @@ bool UCustomMovementComponent::CheckHasReachedLedge()
 		const FVector WalkableSurfaceTraceEnd = WalkableSurfaceTraceStart + DownVector * 100.f;
 
 		FHitResult WalkableSurfaceHitResult = 
-		DoLineTraceSingleByObject(WalkableSurfaceTraceStart, WalkableSurfaceTraceEnd, true);
+		DoLineTraceSingleByObject(WalkableSurfaceTraceStart, WalkableSurfaceTraceEnd);
 
 		if (WalkableSurfaceHitResult.bBlockingHit) {
 			return true;
@@ -369,6 +373,10 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 		{
 			PlayeClimbMontage(IdleToClimbAnimMontage);
 		}
+		else if (CanClimbDownLeadg()) {
+			PlayeClimbMontage(ClimbDownLedgeMontage);
+		}
+		
 	}
 	else
 	{
@@ -392,6 +400,33 @@ bool UCustomMovementComponent::CanStartClimbing()
 	return true;
 }
 
+bool UCustomMovementComponent::CanClimbDownLeadg()
+{
+	if (IsFalling()) return false;
+
+	const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
+	const FVector ComponentForward = UpdatedComponent->GetForwardVector();
+	const FVector DownVector = -UpdatedComponent->GetUpVector();
+
+	const FVector WalkableSurfaceTraceStart = ComponentLocation + ComponentForward * ClimbDownWalkableSurfaceTraceOffset;
+
+	const FVector WalkableSurfaceTraceEnd = WalkableSurfaceTraceStart + DownVector * 100.f;
+
+	FHitResult WalkableSurfaceHit =  DoLineTraceSingleByObject(WalkableSurfaceTraceStart, WalkableSurfaceTraceEnd, true);
+
+	const FVector LedgeTraceStart = WalkableSurfaceHit.TraceStart + ComponentForward * ClimbDownLedgeTraceOffset;
+
+	const FVector LedgeTraceEnd = LedgeTraceStart + DownVector * 200.f;
+
+	FHitResult LedgeTraceHit = DoLineTraceSingleByObject(LedgeTraceStart, LedgeTraceEnd, true);
+
+	if (WalkableSurfaceHit.bBlockingHit && !LedgeTraceHit.bBlockingHit) {
+		return true;
+	}
+
+	return false;
+}
+
 void UCustomMovementComponent::StartClimbing()
 {
 	SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Climb);
@@ -409,6 +444,6 @@ FHitResult UCustomMovementComponent::TraceFromEyeHight(float TraceDistance, floa
 	const FVector Start = ComponentLocation + EyeHeightOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-	return DoLineTraceSingleByObject(Start, End, true);
+	return DoLineTraceSingleByObject(Start, End);
 }
 #pragma endregion
