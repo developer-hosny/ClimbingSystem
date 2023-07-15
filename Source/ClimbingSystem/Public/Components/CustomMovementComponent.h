@@ -64,7 +64,7 @@ private:
 
 	bool CanStartClimbing();
 
-	bool CanClimbDownLeadg();
+	bool CanClimbDownLeadge();
 
 	void StartClimbing();
 

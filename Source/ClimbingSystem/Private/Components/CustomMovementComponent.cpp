@@ -18,7 +18,7 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	CanClimbDownLeadg();
+	CanClimbDownLeadge();
 
 	 //TraceClimbSurfaces();
 	 //TraceFromEyeHight(100.f);
@@ -373,7 +373,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 		{
 			PlayeClimbMontage(IdleToClimbAnimMontage);
 		}
-		else if (CanClimbDownLeadg()) {
+		else if (CanClimbDownLeadge()) {
 			PlayeClimbMontage(ClimbDownLedgeMontage);
 		}
 		
@@ -400,7 +400,7 @@ bool UCustomMovementComponent::CanStartClimbing()
 	return true;
 }
 
-bool UCustomMovementComponent::CanClimbDownLeadg()
+bool UCustomMovementComponent::CanClimbDownLeadge()
 {
 	if (IsFalling()) return false;
 
