@@ -9,10 +9,12 @@
 #include "ClimbingSystem/ClimbingSystemCharacter.h"
 #include "ClimbingSystem/DebugHelper.h"
 #include "Components/CapsuleComponent.h"
+#include "MotionWarpingComponent.h"
 #include "CustomMovementComponent.generated.h"
 
 class UAnimMontage;
 class UAnimInstance;
+class AClimbingSystemCharacter;
 
 UENUM(BlueprintType)
 namespace ECustomMovementMode
@@ -86,6 +88,9 @@ private:
 
 	UFUNCTION()
 	void OnClimbMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	void SetMotionWarpTarget(const FName& InWarpTargetName, const FVector& InTargetPostion);
+
 #pragma endregion
 
 #pragma region ClimbCoreVariables
@@ -98,6 +103,9 @@ private:
 
 	UPROPERTY()
 	UAnimInstance* OwingPlayerAnimInstance;
+
+	UPROPERTY()
+	AClimbingSystemCharacter* OwningPlayerCharacter;
 
 #pragma endregion
 
@@ -137,11 +145,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ClimbDownLedgeMontage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movment: Climbing", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* VaultMontage;
+
 #pragma endregion
 
 public:
 	void ToggleClimbing(bool bEnableClimb = false);
 	bool CheckHasReachedLedge();
+	void TryStartVaulting();
+	bool CanStartVaulting(FVector& OutVaultStartPosition, FVector& OutVaultLandPosition);
 	bool IsClimbing() const;
 	FORCEINLINE FVector GetClimableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
 	FVector GetUnrotatedClimbVelocity()	const;

@@ -253,7 +253,7 @@ void UCustomMovementComponent::OnClimbMontageEnded(UAnimMontage* Montage, bool b
 		StopMovementImmediately();
 	}
 
-	if(Montage == ClimbToTopAnimMontage || Montage == VaultMontage){
+	if(Montage == ClimbToTopAnimMontage){
 		SetMovementMode(MOVE_Walking);
 	}
 }
@@ -263,8 +263,6 @@ void UCustomMovementComponent::SetMotionWarpTarget(const FName& InWarpTargetName
 	if (!OwningPlayerCharacter) return;
 
 	OwningPlayerCharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(InWarpTargetName, InTargetPostion);
-
-	StartClimbing();
 
 }
 
@@ -408,7 +406,7 @@ bool UCustomMovementComponent::CanStartVaulting(FVector& OutVaultStartPosition, 
 			OutVaultStartPosition = VaultTraceHit.ImpactPoint;
 		}
 
-		if (i == 1 && VaultTraceHit.bBlockingHit) {
+		if (i == 4 && VaultTraceHit.bBlockingHit) {
 			OutVaultLandPosition = VaultTraceHit.ImpactPoint;
 		}
 

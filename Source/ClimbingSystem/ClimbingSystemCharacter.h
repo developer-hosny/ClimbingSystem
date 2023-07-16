@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "MotionWarpingComponent.h"
 #include "ClimbingSystemCharacter.generated.h"
 
 class UCustomMovementComponent;
+class UMotionWarpingComponent;
 
 UCLASS(config = Game)
 class AClimbingSystemCharacter : public ACharacter
@@ -28,6 +30,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movment, meta = (AllowPrivateAccess = "true"))
 	UCustomMovementComponent *CustomMovementComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movment, meta = (AllowPrivateAccess = "true"))
+	UMotionWarpingComponent* MotionWarpingComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -75,4 +80,5 @@ public:
 
 	FORCEINLINE class UCustomMovementComponent *GetCustomMovementComponent() const { return CustomMovementComponent; }
 
+	FORCEINLINE class UMotionWarpingComponent* GetMotionWarpingComponent() const {return MotionWarpingComponent;}
 };
