@@ -403,7 +403,7 @@ bool UCustomMovementComponent::CanStartVaulting(FVector& OutVaultStartPosition, 
 		const FVector Start = ComponentLocation + UpVector * 100.f + ComponentForward * 100.f * (i + 1);
 		const FVector End = Start + DownVector * 100.f * (i + 1);
 
-		FHitResult VaultTraceHit = DoLineTraceSingleByObject(Start, End, true, true);
+		FHitResult VaultTraceHit = DoLineTraceSingleByObject(Start, End);
 		if (i == 0 && VaultTraceHit.bBlockingHit) {
 			OutVaultStartPosition = VaultTraceHit.ImpactPoint;
 		}

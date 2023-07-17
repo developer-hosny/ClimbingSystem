@@ -8,6 +8,10 @@
 #include "MotionWarpingComponent.h"
 #include "ClimbingSystemCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UInputMappingContext;
+class UInputAction;
 class UCustomMovementComponent;
 class UMotionWarpingComponent;
 
@@ -20,13 +24,15 @@ public:
 	AClimbingSystemCharacter(const FObjectInitializer &ObjectInitializer);
 
 private:
+#pragma region Components
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent *CameraBoom;
+	 USpringArmComponent *CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent *FollowCamera;
+	 UCameraComponent *FollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movment, meta = (AllowPrivateAccess = "true"))
 	UCustomMovementComponent *CustomMovementComponent;
@@ -34,17 +40,35 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movment, meta = (AllowPrivateAccess = "true"))
 	UMotionWarpingComponent* MotionWarpingComponent;
 
+
+#pragma endregion
+
+
+#pragma region Input
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext *DefaultMappingContext;
+	 UInputMappingContext *DefaultMappingContext;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *JumpAction;
+	 UInputAction *JumpAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* LookAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *MoveAction;
+	UInputAction *MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ClimbAction;
+
+#pragma endregion
+
+
+#pragma region InputCallback
 
 	/** Called for movement input */
 	void Move(const FInputActionValue &Value);
@@ -53,17 +77,13 @@ private:
 
 	void HandleClimbMovementInput(const FInputActionValue& Value);
 
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *LookAction;
-
 	/** Called for looking input */
 	void Look(const FInputActionValue &Value);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *ClimbAction;
-
 	void OnClimbActionStarted(const FInputActionValue &Value);
+
+#pragma endregion
+
 
 protected:
 	// APawn interface
@@ -74,11 +94,11 @@ protected:
 
 public:
 	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent *GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE USpringArmComponent *GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent *GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE UCameraComponent *GetFollowCamera() const { return FollowCamera; }
 
-	FORCEINLINE class UCustomMovementComponent *GetCustomMovementComponent() const { return CustomMovementComponent; }
+	FORCEINLINE UCustomMovementComponent *GetCustomMovementComponent() const { return CustomMovementComponent; }
 
-	FORCEINLINE class UMotionWarpingComponent* GetMotionWarpingComponent() const {return MotionWarpingComponent;}
+	FORCEINLINE UMotionWarpingComponent* GetMotionWarpingComponent() const {return MotionWarpingComponent;}
 };
