@@ -46,9 +46,18 @@ private:
 
 #pragma region Input
 
+	void OnPlayerEnterClimbState();
+	void OnPlayerExitClimbState();
+
+	void AddInputMappingContext(UInputMappingContext* Context, int32 InPriority);
+	void RemoveInputMappingContext(UInputMappingContext* Context);
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	 UInputMappingContext *DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		UInputMappingContext* ClimbMappingContext;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -63,15 +72,15 @@ private:
 	UInputAction *MoveAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ClimbMoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ClimbAction;
 
 #pragma endregion
 
 
 #pragma region InputCallback
-
-	/** Called for movement input */
-	void Move(const FInputActionValue &Value);
 
 	void HandleGroundMovementInput(const FInputActionValue& Value);
 

@@ -60,16 +60,44 @@ void AClimbingSystemCharacter::BeginPlay()
 	// Call the base class
 	Super::BeginPlay();
 
-	// Add Input Mapping Context
-	if (APlayerController *PlayerController = Cast<APlayerController>(Controller))
+	AddInputMappingContext(DefaultMappingContext, 0);
+	
+	if(CustomMovementComponent)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		CustomMovementComponent->OnEnterClimbStateDelegate.BindUObject(this, &ThisClass::OnPlayerEnterClimbState);
+
+		CustomMovementComponent->OnExitClimbStateDelegate.BindUObject(this, &ThisClass::OnPlayerExitClimbState);
+	}
+}
+
+void AClimbingSystemCharacter::AddInputMappingContext(UInputMappingContext* Context, int32 InPriority)
+{
+	if (!Context) return;
+
+	// Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			Subsystem->AddMappingContext(Context, InPriority);
 		}
 	}
-	Debug::Print("Debug Working");
 }
+
+void AClimbingSystemCharacter::RemoveInputMappingContext(UInputMappingContext* Context)
+{
+	if (!Context) return;
+
+	// Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->RemoveMappingContext(Context);
+		}
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -85,28 +113,15 @@ void AClimbingSystemCharacter::SetupPlayerInputComponent(class UInputComponent *
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AClimbingSystemCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AClimbingSystemCharacter::HandleGroundMovementInput);
+
+		EnhancedInputComponent->BindAction(ClimbMoveAction, ETriggerEvent::Triggered, this, &AClimbingSystemCharacter::HandleClimbMovementInput);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AClimbingSystemCharacter::Look);
 
 		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AClimbingSystemCharacter::OnClimbActionStarted);
 	}
-}
-
-void AClimbingSystemCharacter::Move(const FInputActionValue &Value)
-{
-	if (!CustomMovementComponent)return;
-
-	if (CustomMovementComponent->IsClimbing()) {
-		HandleClimbMovementInput(Value);
-	}
-	else
-	{
-		HandleGroundMovementInput(Value);
-	}
-
-	
 }
 
 void AClimbingSystemCharacter::HandleGroundMovementInput(const FInputActionValue& Value)
@@ -181,3 +196,14 @@ void AClimbingSystemCharacter::OnClimbActionStarted(const FInputActionValue &Val
 		CustomMovementComponent->ToggleClimbing(false);
 	}
 }
+
+void AClimbingSystemCharacter::OnPlayerEnterClimbState()
+{
+	AddInputMappingContext(ClimbMappingContext, 1);
+}
+
+void AClimbingSystemCharacter::OnPlayerExitClimbState()
+{
+	RemoveInputMappingContext(ClimbMappingContext);
+}
+

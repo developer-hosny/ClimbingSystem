@@ -12,6 +12,9 @@
 #include "MotionWarpingComponent.h"
 #include "CustomMovementComponent.generated.h"
 
+DECLARE_DELEGATE(FOnEnterClimbState)
+DECLARE_DELEGATE(FOnExitClimbState)
+
 class UAnimMontage;
 class UAnimInstance;
 class AClimbingSystemCharacter;
@@ -31,6 +34,10 @@ UCLASS()
 class CLIMBINGSYSTEM_API UCustomMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
+
+public:
+	FOnEnterClimbState OnEnterClimbStateDelegate;
+	FOnExitClimbState OnExitClimbStateDelegate;
 
 protected:
 #pragma region OverridenFunctions
@@ -55,7 +62,7 @@ private:
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
 
-	FHitResultDoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
+	FHitResult DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
 
 #pragma endregion
 
