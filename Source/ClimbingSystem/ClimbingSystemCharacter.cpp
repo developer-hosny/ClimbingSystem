@@ -121,6 +121,8 @@ void AClimbingSystemCharacter::SetupPlayerInputComponent(class UInputComponent *
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AClimbingSystemCharacter::Look);
 
 		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AClimbingSystemCharacter::OnClimbActionStarted);
+
+		EnhancedInputComponent->BindAction(ClimbHopAction, ETriggerEvent::Started, this, &AClimbingSystemCharacter::OnClimbHopActionStarted);
 	}
 }
 
@@ -207,3 +209,10 @@ void AClimbingSystemCharacter::OnPlayerExitClimbState()
 	RemoveInputMappingContext(ClimbMappingContext);
 }
 
+void AClimbingSystemCharacter::OnClimbHopActionStarted(const FInputActionValue& Value)
+{
+	if (CustomMovementComponent) {
+		CustomMovementComponent->RequestHopping();
+	}
+	Debug::Print(TEXT("Hopping Started"));
+}
